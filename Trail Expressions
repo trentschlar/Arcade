@@ -1,0 +1,77 @@
+Expr0
+Horse icon
+IIf($feature.HORSES== "Yes",  "https://maps.bouldercounty.org/icons/POS/trails/horse.svg", "https://maps.bouldercounty.org/icons/POS/trails/nohorse.svg")
+
+Expr1
+Bike icon
+IIf($feature.BICYCLES== "Yes",  "https://maps.bouldercounty.org/icons/POS/trails/bike.svg", "https://maps.bouldercounty.org/icons/POS/trails/nobike.svg")
+
+Expr2
+Trail Status Color
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Open", "#28563a", "#aa2525")
+
+Expr3
+Trail Closure Reason Attribute
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", $feature["OSMP.TrailClosures.CLOSUREREASON"], "")
+
+Expr4
+Trail Closure Reason Label
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", "\n\nClosure Reason: ", "")
+
+Expr5
+Trail Closure Duration Label
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", "\n\nClosure Duration: ", "")
+
+
+Expr6
+Trail Closure Duration Attribute
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", $feature["OSMP.TrailClosures.CLOSUREDURATION"], "")
+
+Expr7
+Dog Reg Map RID
+Concatenate("https://maps.bouldercolorado.gov/osmp-dog-regs/?find=",$feature["OSMP.TrailsOSMP.TRLID"], '') 
+
+Expr8
+Trail Closure More Info
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", $feature["OSMP.TrailClosures.CONTACT"], "")
+
+Expr9
+Trail Closure More Info Label
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", "\n\nMore Info: ", "")
+
+Expr10
+Closure Comments
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", $feature["OSMP.TrailClosures.COMMENTS"], "")
+
+Expr11
+Closure Comments Label
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", "\n\nComments: ", "")
+
+
+Expr12
+Dog Icon
+IIf($feature.DOGS== "Yes",  "https://maps.bouldercounty.org/icons/POS/trails/dog.svg", "https://maps.bouldercounty.org/icons/POS/trails/nodog.svg")
+
+Expr13
+Closure URL Display
+IIf($feature["OSMP.TrailClosures.TRAILSTATUS"]== "Closed", "inline", "none")
+
+Expr14
+Ebike Icon
+IIf($feature.EBIKES== "Yes",  "https://maps.bouldercolorado.gov/websites/osmp/images/EbikeYes.svg", "https://maps.bouldercolorado.gov/websites/osmp/images/EbikeNo.svg")
+
+Expr15
+Horse Alt Text
+IIf($feature.HORSES== "Yes",  "Horse Allowed", "Horse Not Allowed")
+
+Expr16
+Bike Alt Text
+IIf($feature.BICYCLES== "Yes",  "Traditional Bikes Allowed", "No Bikes Allowed")
+
+Expr17
+EBike Alt Text
+IIf($feature.EBIKES== "Yes",  "E-Bikes Allowed", "No E-Bikes Allowed")
+
+Expr18
+Dog Alt Text
+IIf($feature.DOGS== "Yes",  "Dogs Allowed", "No Dogs Allowed")
