@@ -1,0 +1,162 @@
+Expr	0. 
+OSMP Trailhead Cameras 
+	
+	IIF(
+	  Includes(
+	    ['Chautauqua',
+	     'Doudy Draw',
+	     'Flagstaff Summit East',
+	     'Flagstaff Summit West',
+	     'Flatirons Vista',
+	     'Greenbelt Plateau',
+	     'Panorama Point',
+	     'South Boulder Creek West',
+	     'Wonderland Lake'],
+	    $feature.ACCESSNAME
+	  ),
+	  'OSMP Trailhead Cameras',
+	  null
+	)
+	
+Expr	1. 
+Restroom Icon 
+	
+	IIf($feature.RESTROOMS== "Yes",  "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/pit-toilet-black-22.svg", null)
+	
+Expr	2. 
+Restroom Alt Text 
+	
+	IIf($feature.RESTROOMS== "Yes",  "Vault toilet available.", null)
+	
+Expr	3. 
+Bike-Rack Icon 
+	
+	IIf($feature.BIKERACK== "Yes",  "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/bike-rack-black-22.svg", null)
+	
+Expr	4. 
+Bike-Rack Alt Text 
+	
+	IIf($feature.BIKERACK== "Yes",
+	  "Bike parking available.",
+	  "No bike parking available.")
+	
+Expr	5. 
+Trash Can Icon 
+	
+	IIf($feature.TRASHCANS>0,  "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/litter-receptacle-black-22.svg", null)
+	
+Expr	6. 
+Trash Can Alt Text 
+	
+	IIf($feature.TRASHCANS>0,
+	  "Trash can available.",
+	  "No trash can available.")
+	
+Expr	7. 
+Picnic Icon 
+	
+	IIf($feature.PICNIC== "Yes",
+	  "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/picnic-area-black-22.svg",
+	 null)
+	
+Expr	8. 
+Picnic Alt Text 
+	
+	IIf($feature.PICNIC== "Yes",
+	  "Picnic area available.",
+	  "No picnic area available.")
+	
+	
+Expr	9. 
+Fishing Icon 
+	
+	IIf($feature.FISHING== "Yes",
+	  "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/fishing-black-22.svg",
+	 null)
+	
+Expr	10. 
+Fishing Alt Text 
+	
+	IIf($feature.FISHING== "Yes",
+	  "Access to fishing.",
+	  "No access to fishing.")
+	
+Expr	11. 
+Restroom - Red
+	
+	IIf($feature.RESTROOMS== "Yes",
+	  null,
+	 "background-color:red;")
+	
+Expr	12. 
+osmp-parking-permits-and-fees
+	
+	IIf($feature.FEE== "Yes",
+	  "https://bouldercolorado.gov/services/osmp-parking-permits-and-fees",
+	 null)
+	
+Expr	13. 
+Parking Fee
+	
+	IIf($feature.FEE== "Yes",  
+	"All park visitors whose motor vehicles are not registered in Boulder County must possess either a daily or annual permit to park.",
+	 null)
+	
+Expr	14. 
+Recycle Icon
+	
+	IIf($feature.RECYCLEBIN== "Yes",  "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/recycling-black-22.svg", "https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/recycling-white-22.svg")
+	
+Expr	15. 
+Recycle Icon
+	
+	IIf($feature.RECYCLEBIN== "Yes",  
+	"https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/recycling-black-22.svg", 
+	"https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/recycling-white-22.svg")
+	
+Expr	16. 
+Recycle Alt Text
+	
+	IIf($feature.RECYCLEBIN== "Yes",  
+	 "Recycling available.",
+	 "No recycling available.")
+	
+Expr	17. 
+Camera Icon
+	
+	IIF(
+	  Includes(
+	    ['Chautauqua',
+	     'Doudy Draw',
+	     'Flagstaff Summit East',
+	     'Flagstaff Summit West',
+	     'Flatirons Vista',
+	     'Greenbelt Plateau',
+	     'Panorama Point',
+	     'South Boulder Creek West',
+	     'Wonderland Lake'],
+	    $feature.ACCESSNAME
+	  ),
+	  'https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/video-surveillance-black-22.svg',
+	  'https://raw.githubusercontent.com/nationalparkservice/symbol-library/gh-pages/src/standalone/video-surveillance-white-22.svg'
+	)
+	
+Expr	18. 
+Camera Alt Text
+	
+	IIF(
+	  Includes(
+	    ['Chautauqua',
+	     'Doudy Draw',
+	     'Flagstaff Summit East',
+	     'Flagstaff Summit West',
+	     'Flatirons Vista',
+	     'Greenbelt Plateau',
+	     'Panorama Point',
+	     'South Boulder Creek West',
+	     'Wonderland Lake'],
+	    $feature.ACCESSNAME
+	  ),
+	  'Trailhead camera available.',
+	  'No trailhead camera available.'
+	)
