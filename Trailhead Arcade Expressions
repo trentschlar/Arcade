@@ -160,3 +160,52 @@ Camera Alt Text
 	  'Trailhead camera available.',
 	  'No trailhead camera available.'
 	)
+	
+
+Expr 27. 
+Horse Trailer Parking
+	
+	// Get the field and safely convert it to upper-case string
+	var raw = $feature.HORSETRAILERPARKING;
+	var val = When(IsEmpty(raw), "", Upper(Text(raw)));
+	
+	// First check: starts with DESIGNATED or PULL
+	if (Left(val, 10) == "DESIGNATED" || Left(val, 4) == "PULL") {
+	    return "https://bouldercolorado.gov/media/18179/download?inline";
+	}
+	
+	// Second check: exactly "NOT RECOMMENDED" or "POSSIBLE"
+	else if (val == "NOT RECOMMENDED" || val == "POSSIBLE") {
+	    return "https://bouldercolorado.gov/media/18177/download?inline";
+	}
+	
+	// Default: anything else
+	else {
+	    return "https://bouldercolorado.gov/media/18178/download?inline";
+	}
+	
+Expr 28. 
+Parking Number
+	When(
+	  $feature.PARKSPACES == 0, " are no parking spaces",
+	  $feature.PARKSPACES == 1, " is one parking space",
+	  $feature.PARKSPACES > 1, " are " + $feature.PARKSPACES + " parking spaces", 
+	  "no"
+	)
+	
+Expr 29. 
+Parking Icon
+	IIf($feature.PARKSPACES>0,  "https://bouldercolorado.gov/media/18183/download?inline", "https://bouldercolorado.gov/media/18182/download?inline")
+	
+	
+Expr 30. 
+Camping Icon
+	
+	IIf($feature.RECYCLEBIN== "Yes",  "https://bouldercolorado.gov/media/18165/download?inline", "https://bouldercolorado.gov/media/18164/download?inline")
+	
+Expr 31. 
+Camping Alt Text
+	
+	IIf($feature.RECYCLEBIN== "Yes",  
+	 "Camping allowed.",
+	 "No camping allowed.")
