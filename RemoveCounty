@@ -1,0 +1,5 @@
+// Replace "Name" with your field
+var text = $feature.Name
+
+// If it ends with " County", remove that part
+IIF(Right(text, 7) == " County", Left(text, Count(text) - 7), text)
