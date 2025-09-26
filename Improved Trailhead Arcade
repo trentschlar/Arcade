@@ -1,0 +1,76 @@
+var horses   = $feature['OSMP.TrailsOSMP.HORSES'] == "Yes";
+var bikes    = $feature['OSMP.TrailsOSMP.BICYCLES'] == "Yes";
+var ebikes   = $feature['OSMP.TrailsOSMP.EBIKES'] == "Yes";
+var dogs     = $feature['OSMP.TrailsOSMP.DOGS'] == "Yes";
+
+var status   = $feature["OSMP.TrailClosures.TRAILSTATUS"];
+var reason   = $feature["OSMP.TrailClosures.CLOSUREREASON"];
+var duration = $feature["OSMP.TrailClosures.CLOSUREDURATION"];
+var contact  = $feature["OSMP.TrailClosures.CONTACT"];
+var comments = $feature["OSMP.TrailClosures.COMMENTS"];
+var trlid    = $feature["OSMP.TrailsOSMP.TRLID"];
+var name     = $feature["OSMP.TrailsOSMP.TRAILNAME"];
+var miles    = $feature["OSMP.TrailsOSMP.MILEAGE"];
+var diff     = $feature["OSMP.TrailsOSMP.DIFFICULTY"];
+
+// === Status color and closure visibility ===
+var statusColor = IIf(status == "Open", "#28563a", "#aa2525");
+var closureDisplay = IIf(status == "Closed", "inline", "none");
+
+// === Allowed use icons & alt text ===
+var hikeIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/hike.svg" alt="Hiking Allowed" width="30" height="30">';
+
+var bikeIcon = '<img src="' + 
+    IIf(bikes, "https://maps.bouldercounty.org/icons/POS/trails/bike.svg", "https://maps.bouldercounty.org/icons/POS/trails/nobike.svg") +
+    '" alt="' + IIf(bikes, "Traditional Bikes Allowed", "No Bikes Allowed") + '" width="30" height="30">';
+
+var ebikeIcon = '<img src="' +
+    IIf(ebikes, "https://maps.bouldercolorado.gov/websites/osmp/images/EbikeYes.svg", "https://maps.bouldercolorado.gov/websites/osmp/images/EbikeNo.svg") +
+    '" alt="' + IIf(ebikes, "E-Bikes Allowed", "No E-Bikes Allowed") + '" width="30" height="30">';
+
+var horseIcon = '<img src="' +
+    IIf(horses, "https://maps.bouldercounty.org/icons/POS/trails/horse.svg", "https://maps.bouldercounty.org/icons/POS/trails/nohorse.svg") +
+    '" alt="' + IIf(horses, "Horse Allowed", "Horse Not Allowed") + '" width="30" height="30">';
+
+var dogIcon = '<img src="' +
+    IIf(dogs, "https://maps.bouldercounty.org/icons/POS/trails/dog.svg", "https://maps.bouldercounty.org/icons/POS/trails/nodog.svg") +
+    '" alt="' + IIf(dogs, "Dogs Allowed", "No Dogs Allowed") + '" width="30" height="30">';
+
+// === Closure text blocks (only if Closed) ===
+var closureText = "";
+if (status == "Closed") {
+    closureText += '<span style="font-family:Arial;font-size:18px;"><strong><br><br>Closure Reason: </strong>' + reason + '</span>';
+    closureText += '<span style="font-family:Arial;font-size:18px;"><strong><br><br>Closure Duration: </strong>' + duration + '</span>';
+    if (!IsEmpty(comments)) {
+        closureText += '<span style="font-family:Arial;font-size:18px;"><strong><br><br>Comments: </strong>' + comments + '</span>';
+    }
+    if (!IsEmpty(contact)) {
+        closureText += '<span style="font-family:Arial;font-size:18px;"><strong><br><br>More Info: </strong><a href="' + contact + '" target="_blank" style="color:#406f8c;">OSMP Closures</a></span>';
+    }
+}
+
+// === Build HTML ===
+var html = ''
++ '<h3 style="background-color:#27443A;border-style:solid;border-width:1px;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">' + name + ' Trail Info</span>'
++ '</h3>'
+
++ '<p><span style="font-family:Arial;font-size:18px;"><strong>Trail Status:</strong></span> '
++ '<span style="font-family:Arial;font-size:18px;"><font color="' + statusColor + '"><strong>' + status + '</strong></font></span>'
++ '</p>'
+
++ closureText
+
++ '<p><span style="font-family:Arial;font-size:18px;"><strong>Length:</strong></span> '
++ '<span style="font-family:Arial;font-size:18px;">' + miles + ' mi</span></p>'
+
++ '<p><span style="font-family:Arial;font-size:18px;"><strong>Difficulty:</strong></span> '
++ '<span style="font-family:Arial;font-size:18px;">' + diff + '</span></p>'
+
++ '<h3 style="background-color:#27443A;border-style:solid;border-width:1px;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Allowed Uses</span>'
++ '</h3>'
+
++ '<p style="text-align:center;">' + hikeIcon + bikeIcon + ebikeIcon + horseIcon + dogIcon + '</p>';
+
+return html;
