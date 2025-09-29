@@ -1,0 +1,199 @@
+// OSMP Trailhead Popup - Consolidated Expression with Available/Not Available Categories
+
+// Get feature attributes
+var accessName = $feature['OsmpProd.OSMP.trailTrailheads.ACCESSNAME'];
+var parkSpaces = $feature['OsmpProd.OSMP.trailTrailheads.PARKSPACES'];
+var horseTrailer = $feature['OsmpProd.OSMP.trailTrailheads.HORSETRAILERPARKING'];
+var restrooms = $feature['OsmpProd.OSMP.trailTrailheads.RESTROOMS'];
+var bikeSpaces = $feature['OsmpProd.OSMP.trailTrailheads.BIKESPACES'];
+var trashCans = $feature['OsmpProd.OSMP.trailTrailheads.TRASHCANS'];
+var picnic = $feature['OsmpProd.OSMP.trailTrailheads.PICNIC'];
+var fishing = $feature['OsmpProd.OSMP.trailTrailheads.FISHING'];
+var recycling = $feature['OsmpProd.OSMP.trailTrailheads.RECYCLEBIN'];
+var camping = $feature['OsmpProd.OSMP.trailTrailheads.CAMPING'];
+var fee = $feature['OsmpProd.OSMP.trailTrailheads.FEE'];
+var thUrl = $feature['OsmpProd.OSMP.trailTrailheads.THURL'];
+var thCamera = $feature['OsmpProd.OSMP.trailTrailheads.THCAMERA'];
+var adaFacName = $feature['OsmpProd.OSMP.trailTrailheads.ADAFACNAME'];
+
+// Trailhead closure info
+var trailheadStatus = $feature['OSMP.TrailheadClosures.TRAILHEADSTATUS'];
+var closureReason = $feature['OSMP.TrailheadClosures.CLOSUREREASON'];
+var closureDuration = $feature['OSMP.TrailheadClosures.CLOSUREDURATION'];
+var closureContact = $feature['OSMP.TrailheadClosures.CONTACT'];
+
+// === Helper: Get horse trailer icon ===
+function getHorseTrailerIcon(value) {
+    var val = When(IsEmpty(value), "", Upper(Text(value)));
+    
+    if (Left(val, 10) == "DESIGNATED" || Left(val, 4) == "PULL") {
+        return "https://bouldercolorado.gov/media/18179/download?inline";
+    }
+    else if (val == "NOT RECOMMENDED" || val == "POSSIBLE") {
+        return "https://bouldercolorado.gov/media/18177/download?inline";
+    }
+    else {
+        return "https://bouldercolorado.gov/media/18178/download?inline";
+    }
+}
+
+// === Helper: Get parking spaces text ===
+function getParkingText(spaces) {
+    return When(
+        spaces == 0, " are no parking spaces",
+        spaces == 1, " is one parking space",
+        spaces > 1, " are " + spaces + " parking spaces",
+        " are no parking spaces"
+    );
+}
+
+// === Helper: Get parking icon ===
+function getParkingIcon(spaces) {
+    return IIf(spaces > 0, 
+        "https://bouldercolorado.gov/media/18183/download?inline", 
+        "https://bouldercolorado.gov/media/18182/download?inline");
+}
+
+// === Status color ===
+var statusColor = IIf(trailheadStatus == "Open", "#28563a", "#aa2525");
+
+// === Fee info ===
+var feeSection = IIf(fee == "Yes",
+    ' <a href="https://bouldercolorado.gov/services/osmp-parking-permits-and-fees" target="_blank" rel="nofollow">All park visitors whose motor vehicles are not registered in Boulder County must possess either a daily or annual permit to park.</a>',
+    '');
+
+// === Closure link ===
+var closureLink = IIf(trailheadStatus == "Closed",
+    '<p><a target="_blank" rel="nofollow" href="https://bouldercolorado.gov/services/osmp-closures">OSMP Closures Website</a></p>',
+    '');
+
+// === Camera link (only show if trailhead has camera) ===
+var cameraLink = IIf(thCamera == "Yes",
+    '<p><a target="_blank" rel="nofollow" href="https://bouldercolorado.gov/trailhead-cameras"><span style="font-family:Arial;font-size:14px;">OSMP Trailhead Cameras</span></a></p>',
+    '');
+
+// === Build amenity icons ===
+var availableAmenities = '';
+var notAvailableAmenities = '';
+
+// Restrooms
+var restroomIcon = '<img src="https://bouldercolorado.gov/media/18176/download?inline" alt="Vault toilet available" width="30" height="30" style="margin:0 6px;">';
+var noRestroomIcon = '<img src="https://bouldercolorado.gov/media/18175/download?inline" alt="No vault toilet available" width="30" height="30" style="margin:0 6px;">';
+if (restrooms == "Yes") {
+    availableAmenities += restroomIcon;
+} else {
+    notAvailableAmenities += noRestroomIcon;
+}
+
+// Bike Rack
+var bikeRackIcon = '<img src="https://bouldercolorado.gov/media/18160/download?inline" alt="Bike parking available" width="30" height="30" style="margin:0 6px;">';
+var noBikeRackIcon = '<img src="https://bouldercolorado.gov/media/18161/download?inline" alt="No bike parking available" width="30" height="30" style="margin:0 6px;">';
+if (bikeSpaces > 0) {
+    availableAmenities += bikeRackIcon;
+} else {
+    notAvailableAmenities += noBikeRackIcon;
+}
+
+// Trash Cans
+var trashIcon = '<img src="https://bouldercolorado.gov/media/18181/download?inline" alt="Trash can available" width="30" height="30" style="margin:0 6px;">';
+var noTrashIcon = '<img src="https://bouldercolorado.gov/media/18180/download?inline" alt="No trash can available" width="30" height="30" style="margin:0 6px;">';
+if (trashCans > 0) {
+    availableAmenities += trashIcon;
+} else {
+    notAvailableAmenities += noTrashIcon;
+}
+
+// Picnic
+var picnicIcon = '<img src="https://bouldercolorado.gov/media/18171/download?inline" alt="Picnic area available" width="30" height="30" style="margin:0 6px;">';
+var noPicnicIcon = '<img src="https://bouldercolorado.gov/media/18170/download?inline" alt="No picnic area available" width="30" height="30" style="margin:0 6px;">';
+if (picnic == "Yes") {
+    availableAmenities += picnicIcon;
+} else {
+    notAvailableAmenities += noPicnicIcon;
+}
+
+// Fishing
+var fishingIcon = '<img src="https://bouldercolorado.gov/media/18168/download?inline" alt="Access to fishing" width="30" height="30" style="margin:0 6px;">';
+var noFishingIcon = '<img src="https://bouldercolorado.gov/media/18167/download?inline" alt="No access to fishing" width="30" height="30" style="margin:0 6px;">';
+if (fishing == "Yes") {
+    availableAmenities += fishingIcon;
+} else {
+    notAvailableAmenities += noFishingIcon;
+}
+
+// Recycling
+var recyclingIcon = '<img src="https://bouldercolorado.gov/media/18174/download?inline" alt="Recycling available" width="30" height="30" style="margin:0 6px;">';
+var noRecyclingIcon = '<img src="https://bouldercolorado.gov/media/18173/download?inline" alt="No recycling available" width="30" height="30" style="margin:0 6px;">';
+if (recycling == "Yes") {
+    availableAmenities += recyclingIcon;
+} else {
+    notAvailableAmenities += noRecyclingIcon;
+}
+
+// Camera
+var cameraIcon = '<img src="https://bouldercolorado.gov/media/18163/download?inline" alt="Trailhead camera available" width="30" height="30" style="margin:0 6px;">';
+var noCameraIcon = '<img src="https://bouldercolorado.gov/media/18164/download?inline" alt="No trailhead camera available" width="30" height="30" style="margin:0 6px;">';
+if (thCamera == "Yes") {
+    availableAmenities += cameraIcon;
+} else {
+    notAvailableAmenities += noCameraIcon;
+}
+
+// Camping
+var campingIcon = '<img src="https://bouldercolorado.gov/media/18165/download?inline" alt="Camping allowed" width="30" height="30" style="margin:0 6px;">';
+var noCampingIcon = '<img src="https://bouldercolorado.gov/media/18164/download?inline" alt="No camping allowed" width="30" height="30" style="margin:0 6px;">';
+if (camping == "Yes") {
+    availableAmenities += campingIcon;
+} else {
+    notAvailableAmenities += noCampingIcon;
+}
+
+// Static "Not Allowed" icons (fires and hunting are never allowed)
+notAvailableAmenities += '<img src="https://bouldercolorado.gov/media/18166/download?inline" alt="No fires" width="30" height="30" style="margin:0 6px;">';
+notAvailableAmenities += '<img src="https://bouldercolorado.gov/media/18169/download?inline" alt="No hunting" width="30" height="30" style="margin:0 6px;">';
+
+// === Build HTML ===
+var html = ''
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">' + accessName + ' Trailhead is ' + trailheadStatus + '</span>'
++ '</h3>'
+
++ '<p>'
++ '<img src="' + getParkingIcon(parkSpaces) + '" alt="" width="30" height="30"> &nbsp; &nbsp;'
++ '<span style="font-family:Arial;font-size:14px;">There' + getParkingText(parkSpaces) + ' at ' + accessName + '.' + feeSection + '</span>'
++ '</p>'
+
++ '<p>'
++ '<img src="' + getHorseTrailerIcon(horseTrailer) + '" alt="" width="30" height="30"> &nbsp; &nbsp;'
++ '<span style="font-family:Arial;font-size:14px;">Horse trailer parking is ' + horseTrailer + '.</span>'
++ '</p>'
+
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">' + accessName + ' Trailhead Amenities</span>'
++ '</h3>'
+
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Available</span>'
++ '</h3>'
++ '<p style="text-align:center;">' + availableAmenities + '</p>'
+
++ '<h3 style="background-color:#741919;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Not Available</span>'
++ '</h3>'
++ '<p style="text-align:center;">' + notAvailableAmenities + '</p>'
+
++ '<p>'
++ '<span style="font-family:Arial;font-size:14px;">Special features at ' + accessName + ' include the ' + adaFacName + '.</span>'
++ '</p>'
+
++ '<p>'
++ '<span style="font-family:Arial;font-size:14px;">Find out more on </span>'
++ '<a href="' + thUrl + '" target="_blank" rel="nofollow">'
++ '<span style="font-family:Arial;font-size:14px;">OSMP\'s trailhead web page for ' + accessName + '</span>'
++ '</a>'
++ '</p>'
+
++ cameraLink
++ closureLink;
+
+return html;
