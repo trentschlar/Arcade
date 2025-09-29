@@ -12,65 +12,75 @@ var trlid    = $feature["OSMP.TrailsOSMP.TRLID"];
 var name     = $feature["OSMP.TrailsOSMP.TRAILNAME"];
 var miles    = $feature["OSMP.TrailsOSMP.MILEAGE"];
 var diff     = $feature["OSMP.TrailsOSMP.DIFFICULTY"];
+var dogdesc  = $feature["OSMP.TrailsOSMP.DOGREGDESC"];
 
 // === Status color ===
 var statusColor = IIf(status == "Open", "#28563a", "#aa2525");
 
-// === Allowed use icons with spacing + hover text ===
-var hikeIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/hike.svg" alt="Hiking Allowed" title="Hiking Allowed" width="30" height="30" style="margin:0 5px;">';
+// === Hiking always allowed ===
+var hikeIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/hike.svg" alt="Hiking Allowed" title="Hiking Allowed" width="30" height="30" style="margin:0 6px;">';
 
-var bikeIcon = '<img src="' + 
-    IIf(bikes, "https://maps.bouldercounty.org/icons/POS/trails/bike.svg", "https://maps.bouldercounty.org/icons/POS/trails/nobike.svg") +
-    '" alt="' + IIf(bikes, "Traditional Bikes Allowed", "No Bikes Allowed") +
-    '" title="' + IIf(bikes, "Traditional Bikes Allowed", "No Bikes Allowed") +
-    '" width="30" height="30" style="margin:0 1px;">';
+// === Bikes ===
+var bikeIcon = IIf(bikes,
+    '<img src="https://maps.bouldercounty.org/icons/POS/trails/bike.svg" alt="Traditional Bikes Allowed" title="Traditional Bikes Allowed" width="30" height="30" style="margin:0 6px;">',
+    '<img src="https://maps.bouldercounty.org/icons/POS/trails/nobike.svg" alt="No Bikes Allowed" title="No Bikes Allowed" width="30" height="30" style="margin:0 6px;">'
+);
 
-var ebikeIcon = '<img src="' +
-    IIf(ebikes, "https://maps.bouldercolorado.gov/websites/osmp/images/EbikeYes.svg", "https://maps.bouldercolorado.gov/websites/osmp/images/EbikeNo.svg") +
-    '" alt="' + IIf(ebikes, "E-Bikes Allowed", "No E-Bikes Allowed") +
-    '" title="' + IIf(ebikes, "E-Bikes Allowed", "No E-Bikes Allowed") +
-    '" width="30" height="30" style="margin:0 1px;">';
+// === E-Bikes ===
+var ebikeIcon = IIf(ebikes,
+    '<img src="https://maps.bouldercolorado.gov/websites/osmp/images/EbikeYes.svg" alt="E-Bikes Allowed" title="E-Bikes Allowed" width="30" height="30" style="margin:0 6px;">',
+    '<img src="https://maps.bouldercolorado.gov/websites/osmp/images/EbikeNo.svg" alt="No E-Bikes Allowed" title="No E-Bikes Allowed" width="30" height="30" style="margin:0 6px;">'
+);
 
-var horseIcon = '<img src="' +
-    IIf(horses, "https://maps.bouldercounty.org/icons/POS/trails/horse.svg", "https://maps.bouldercounty.org/icons/POS/trails/nohorse.svg") +
-    '" alt="' + IIf(horses, "Horse Allowed", "Horse Not Allowed") +
-    '" title="' + IIf(horses, "Horse Allowed", "Horse Not Allowed") +
-    '" width="30" height="30" style="margin:0 1px;">';
+// === Horses ===
+var horseIcon = IIf(horses,
+    '<img src="https://maps.bouldercounty.org/icons/POS/trails/horse.svg" alt="Horse Allowed" title="Horse Allowed" width="30" height="30" style="margin:0 6px;">',
+    '<img src="https://maps.bouldercounty.org/icons/POS/trails/nohorse.svg" alt="Horse Not Allowed" title="Horse Not Allowed" width="30" height="30" style="margin:0 6px;">'
+);
 
-var dogIcon = '<img src="' +
-    IIf(dogs, "https://maps.bouldercounty.org/icons/POS/trails/dog.svg", "https://maps.bouldercounty.org/icons/POS/trails/nodog.svg") +
-    '" alt="' + IIf(dogs, "Dogs Allowed", "No Dogs Allowed") +
-    '" title="' + IIf(dogs, "Dogs Allowed", "No Dogs Allowed") +
-    '" width="30" height="30" style="margin:0 1px;">';
+// === Dogs ===
+var dogIcon = IIf(dogs,
+    '<img src="https://maps.bouldercounty.org/icons/POS/trails/dog.svg" alt="Dogs Allowed" title="Dogs Allowed" width="30" height="30" style="margin:0 6px;">',
+    '<img src="https://maps.bouldercounty.org/icons/POS/trails/nodog.svg" alt="No Dogs Allowed" title="No Dogs Allowed" width="30" height="30" style="margin:0 6px;">'
+);
 
-// === Voice and Sight icon ===
+// === Voice & Sight ===
 var vsIconUrl = When(
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "LVS M-F, Leash Required Sat & Sun", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSMF.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash Required", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSNo.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash Required on Portion of Trail", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/PartialVS.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash Required on South Portion", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/PartialVS.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash, Or Voice and Sight Control", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VS.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "No Dogs", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSNo.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "On-Corridor Voice and Sight", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSC.svg",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Regulation Varies", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/PartialVS.svg",
+    dogdesc == "LVS M-F, Leash Required Sat & Sun", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSMF.svg",
+    dogdesc == "Leash Required", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSNo.svg",
+    dogdesc == "Leash Required on Portion of Trail", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/PartialVS.svg",
+    dogdesc == "Leash Required on South Portion", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/PartialVS.svg",
+    dogdesc == "Leash, Or Voice and Sight Control", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VS.svg",
+    dogdesc == "No Dogs", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSNo.svg",
+    dogdesc == "On-Corridor Voice and Sight", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSC.svg",
+    dogdesc == "Regulation Varies", "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/PartialVS.svg",
     "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/VSNo.svg"
 );
 
 var vsAltText = When(
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "LVS M-F, Leash Required Sat & Sun", "Leash, Or Voice and Sight Control for dogs with tag on weekdays, Leash on weekends.",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash Required", "Leash required by all dogs.",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash Required on Portion of Trail", "Leash Required on Portion of Trail.",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash Required on South Portion", "Leash Required on Portion of Trail",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Leash, Or Voice and Sight Control", "Leash, Or Voice and Sight Control for dogs with tag.",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "No Dogs", "No Dogs",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "On-Corridor Voice and Sight", "Leash, Or Voice and Sight Control within 20ft of trail for dogs with tag.",
-    $feature['OSMP.TrailsOSMP.DOGREGDESC'] == "Regulation Varies", "Leash Required on Portion of Trail",
-    "No Dogs"
+    dogdesc == "LVS M-F, Leash Required Sat & Sun", "Leash, Or Voice and Sight Control for dogs with tag on weekdays, Leash on weekends.",
+    dogdesc == "Leash Required", "Leash required by all dogs.",
+    dogdesc == "Leash Required on Portion of Trail", "Leash Required on Portion of Trail.",
+    dogdesc == "Leash Required on South Portion", "Leash Required on Portion of Trail.",
+    dogdesc == "Leash, Or Voice and Sight Control", "Leash, Or Voice and Sight Control for dogs with tag.",
+    dogdesc == "No Dogs", "No Dogs.",
+    dogdesc == "On-Corridor Voice and Sight", "Voice and Sight within 20ft of trail for dogs with tag.",
+    dogdesc == "Regulation Varies", "Leash Required on Portion of Trail.",
+    "No Dogs."
 );
 
-var vsIcon = '<img src="' + vsIconUrl + '" alt="' + vsAltText + '" title="' + vsAltText + '" width="30" height="30" style="margin:0 1px;">';
+var vsIcon = '<img src="' + vsIconUrl + '" alt="' + vsAltText + '" title="' + vsAltText + '" width="30" height="30" style="margin:0 6px;">';
 
-// === Closure text blocks (only if Closed) ===
+// === Sort icons into allowed vs not allowed ===
+var allowedIcons = hikeIcon;
+var notAllowedIcons = "";
+
+if (bikes) { allowedIcons += bikeIcon; } else { notAllowedIcons += bikeIcon; }
+if (ebikes) { allowedIcons += ebikeIcon; } else { notAllowedIcons += ebikeIcon; }
+if (horses) { allowedIcons += horseIcon; } else { notAllowedIcons += horseIcon; }
+if (dogs) { allowedIcons += dogIcon + vsIcon; } else { notAllowedIcons += dogIcon + vsIcon; }
+
+// === Closure text ===
 var closureText = "";
 if (status == "Closed") {
     closureText += '<span style="font-family:Arial;font-size:18px;"><strong><br><br>Closure Reason: </strong>' + reason + '</span>';
@@ -85,13 +95,12 @@ if (status == "Closed") {
 
 // === Build HTML ===
 var html = ''
-+ '<h3 style="background-color:#27443A;border-style:solid;border-width:1px;color:white;padding:5px;text-align:center;">'
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
 + '<span style="font-family:Arial;font-size:18px;">' + name + ' Trail Info</span>'
 + '</h3>'
 
 + '<p><span style="font-family:Arial;font-size:18px;"><strong>Trail Status:</strong></span> '
-+ '<span style="font-family:Arial;font-size:18px;"><font color="' + statusColor + '"><strong>' + status + '</strong></font></span>'
-+ '</p>'
++ '<span style="font-family:Arial;font-size:18px;color:' + statusColor + ';"><strong>' + status + '</strong></span></p>'
 
 + closureText
 
@@ -101,10 +110,13 @@ var html = ''
 + '<p><span style="font-family:Arial;font-size:18px;"><strong>Difficulty:</strong></span> '
 + '<span style="font-family:Arial;font-size:18px;">' + diff + '</span></p>'
 
-+ '<h3 style="background-color:#27443A;border-style:solid;border-width:1px;color:white;padding:5px;text-align:center;">'
-+ '<span style="font-family:Arial;font-size:18px;">Allowed Uses</span>'
-+ '</h3>'
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Allowed Activities</span></h3>'
++ '<p style="text-align:center;">' + allowedIcons + '</p>'
 
-+ '<p style="text-align:center;">' + hikeIcon + bikeIcon + ebikeIcon + horseIcon + dogIcon + vsIcon + '</p>';
++ '<h3 style="background-color:#741919;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Not Allowed</span></h3>'
++ '<p style="text-align:center;">' + notAllowedIcons + '</p>';
 
 return html;
+
