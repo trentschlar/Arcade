@@ -38,7 +38,7 @@ function getHorseTrailerIcon(value) {
 function getParkingText(spaces) {
     return When(
         spaces == 0, " are no parking spaces",
-        spaces == 1, " is one parking space",
+        spaces == 1, " is a large parking lot",
         spaces > 1, " are " + spaces + " parking spaces",
         " are no parking spaces"
     );
@@ -52,7 +52,7 @@ function getParkingIcon(spaces) {
 }
 
 // === Status color ===
-var statusColor = IIf(trailheadStatus == "Open", "#28563a", "#aa2525");
+var statusColor = IIf(trailheadStatus == "Open", "#27443A", "#772618");
 
 // === Fee section ===
 var feeSection = IIf(fee == "Yes",
@@ -108,7 +108,7 @@ availableAmenities += IIf(recycling=="Yes", recyclingIcon, notAvailableAmenities
 
 // Camera
 var cameraIcon = '<img src="https://bouldercolorado.gov/media/18163/download?inline" alt="Trailhead camera available" title="Trailhead camera available" width="30" height="30" style="margin:0 6px;">';
-var noCameraIcon = '<img src="https://bouldercolorado.gov/media/18164/download?inline" alt="No trailhead camera available" title="No trailhead camera available" width="30" height="30" style="margin:0 6px;">';
+var noCameraIcon = '<img src="https://bouldercolorado.gov/media/18162/download?inline" alt="No trailhead camera available" title="No trailhead camera available" width="30" height="30" style="margin:0 6px;">';
 availableAmenities += IIf(thCamera=="Yes", cameraIcon, notAvailableAmenities += noCameraIcon);
 
 // Camping
@@ -183,34 +183,35 @@ notAvailableAmenities += '<img src="https://bouldercolorado.gov/media/18169/down
 // Ensure accessName is a string
 var accessNameStr = IIf(IsEmpty(accessName), "Trailhead", Text(accessName));
 
-// Build HTML
-var html = ''
-+ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
-+ '<span style="font-family:Arial;font-size:18px;">' + accessNameStr + ' Trailhead is ' + trailheadStatus + '</span>'
-+ '</h3>'
-+ '<p>'
-+ '<img src="' + getParkingIcon(parkSpaces) + '" alt="" width="30" height="30"> &nbsp; &nbsp;'
-+ '<span style="font-family:Arial;font-size:14px;">There' + getParkingText(parkSpaces) + ' at ' + accessNameStr + '.' + feeSection + '</span>'
-+ '</p>'
-+ '<p>'
-+ '<img src="' + getHorseTrailerIcon(horseTrailer) + '" alt="" width="30" height="30"> &nbsp; &nbsp;'
-+ '<span style="font-family:Arial;font-size:14px;">Horse trailer parking is ' + horseTrailer + '.</span>'
-+ '</p>'
-+ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
-+ '<span style="font-family:Arial;font-size:18px;">Available Amenities</span>'
-+ '</h3>'
-+ '<p style="text-align:center;">' + availableAmenities + '</p>'
-+ '<h3 style="background-color:#741919;border:1px solid #000;color:white;padding:5px;text-align:center;">'
-+ '<span style="font-family:Arial;font-size:18px;">Not Available</span>'
-+ '</h3>'
-+ '<p style="text-align:center;">' + notAvailableAmenities + '</p>'
-+ '<p>'
-+ '<span style="font-family:Arial;font-size:14px;">Find out more on </span>'
-+ '<a href="' + thUrl + '" target="_blank" rel="nofollow">'
-+ '<span style="font-family:Arial;font-size:14px;">OSMP\'s trailhead web page for ' + accessNameStr + '</span>'
-+ '</a>'
-+ '</p>'
-+ cameraLink
-+ closureLink;
+var html = 
+'<h3 style="background-color:' + statusColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;">' +
+    '<span style="font-family:Arial;font-size:18px;">' + accessNameStr + ' Trailhead is ' + trailheadStatus + '</span>' +
+'</h3>' +
+'<p>' +
+    '<img src="' + getParkingIcon(parkSpaces) + '" alt="" width="30" height="30"> &nbsp; &nbsp;' +
+    '<span style="font-family:Arial;font-size:14px;">There' + getParkingText(parkSpaces) + ' at ' + accessNameStr + '.' + feeSection + '</span>' +
+'</p>' +
+'<p>' +
+    '<img src="' + getHorseTrailerIcon(horseTrailer) + '" alt="" width="30" height="30"> &nbsp; &nbsp;' +
+    '<span style="font-family:Arial;font-size:14px;">Horse trailer parking is ' + horseTrailer + '.</span>' +
+'</p>' +
+'<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">' +
+    '<span style="font-family:Arial;font-size:18px;">Available Amenities</span>' +
+'</h3>' +
+'<p style="text-align:center;">' + availableAmenities + '</p>' +
+'<h3 style="background-color:#772618;border:1px solid #000;color:white;padding:5px;text-align:center;">' +
+    '<span style="font-family:Arial;font-size:18px;">Not Available</span>' +
+'</h3>' +
+'<p style="text-align:center;">' + notAvailableAmenities + '</p>' +
+'<p>' +
+    '<span style="font-family:Arial;font-size:14px;">Find out more on </span>' +
+    '<a href="' + thUrl + '" target="_blank" rel="nofollow">' +
+        '<span style="font-family:Arial;font-size:14px;">OSMP\'s trailhead web page for ' + accessNameStr + '</span>' +
+    '</a>' +
+'</p>' +
+cameraLink +
+closureLink;
+
 
 return html;
+
