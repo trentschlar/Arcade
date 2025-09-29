@@ -15,7 +15,7 @@ var diff     = $feature["OSMP.TrailsOSMP.DIFFICULTY"];
 var dogdesc  = $feature["OSMP.TrailsOSMP.DOGREGDESC"];
 
 // === Status color ===
-var statusColor = IIf(status == "Open", "#28563a", "#aa2525");
+var statusColor = IIf(status == "Open", "#27443A", "#772618");
 
 // === Hiking always allowed ===
 var hikeIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/hike.svg" alt="Hiking Allowed" title="Hiking Allowed" width="30" height="30" style="margin:0 6px;">';
@@ -71,6 +71,9 @@ var vsAltText = When(
 
 var vsIcon = '<img src="' + vsIconUrl + '" alt="' + vsAltText + '" title="' + vsAltText + '" width="30" height="30" style="margin:0 6px;">';
 
+// === Determine if Voice & Sight should be in "Not Allowed" ===
+var vsInNotAllowed = (dogdesc == "Leash Required" || dogdesc == "No Dogs");
+
 // === Sort icons into allowed vs not allowed ===
 var allowedIcons = hikeIcon;
 var notAllowedIcons = "";
@@ -78,7 +81,20 @@ var notAllowedIcons = "";
 if (bikes) { allowedIcons += bikeIcon; } else { notAllowedIcons += bikeIcon; }
 if (ebikes) { allowedIcons += ebikeIcon; } else { notAllowedIcons += ebikeIcon; }
 if (horses) { allowedIcons += horseIcon; } else { notAllowedIcons += horseIcon; }
-if (dogs) { allowedIcons += dogIcon + vsIcon; } else { notAllowedIcons += dogIcon + vsIcon; }
+
+// Handle dogs and V&S icons
+if (dogs) { 
+    allowedIcons += dogIcon;
+    // Only add V&S to allowed if it's not a restricted type
+    if (!vsInNotAllowed) {
+        allowedIcons += vsIcon;
+    } else {
+        notAllowedIcons += vsIcon;
+    }
+} else { 
+    notAllowedIcons += dogIcon;
+    notAllowedIcons += vsIcon;
+}
 
 // === Closure text ===
 var closureText = "";
@@ -114,9 +130,8 @@ var html = ''
 + '<span style="font-family:Arial;font-size:18px;">Allowed Activities</span></h3>'
 + '<p style="text-align:center;">' + allowedIcons + '</p>'
 
-+ '<h3 style="background-color:#741919;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<h3 style="background-color:#772618;border:1px solid #000;color:white;padding:5px;text-align:center;">'
 + '<span style="font-family:Arial;font-size:18px;">Not Allowed</span></h3>'
 + '<p style="text-align:center;">' + notAllowedIcons + '</p>';
 
 return html;
-
