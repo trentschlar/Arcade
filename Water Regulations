@@ -1,0 +1,193 @@
+var waterFeature = $feature.WaterFeature;
+var propertyName = $feature.PropertyName;
+var commonName = $feature.CommonName;
+var fishing = $feature.Fishing;
+var fishingReg = $feature.FishingRegulation;
+var fishDateFrom = $feature.DM_FishDateFrom;
+var fishDateTo = $feature.DM_FishDateTo;
+var fishLink = $feature.FishLink;
+var boating = $feature.Boating;
+var boatingReg = $feature.BoatingRegulation;
+var boatDateFrom = $feature.DM_BoatDateFrom;
+var boatDateTo = $feature.DM_BoatDateTo;
+var boatLink = $feature.BoatLink;
+var otherRegs = $feature.OtherRegs;
+var otherRegsLink = $feature.OtherRegsLink;
+var managedBy = $feature.ManagedBy;
+
+// Determine display name (use WaterFeature, or CommonName as fallback)
+var displayName = When(
+    !IsEmpty(waterFeature), waterFeature,
+    !IsEmpty(commonName), commonName,
+    !IsEmpty(propertyName), propertyName,
+    "Water Feature"
+);
+
+// === Helper: Check if dogs are allowed based on OtherRegs ===
+function checkDogsAllowed(otherRegsText) {
+    if (IsEmpty(otherRegsText)) return null;
+    var upperRegs = Upper(otherRegsText);
+    // Check for dog prohibitions
+    if (Find("DOGS PROHIBITED", upperRegs) > -1 || Find("NO DOGS", upperRegs) > -1) {
+        return false;
+    }
+    // Check for dog allowances with restrictions
+    if (Find("DOGS MUST BE", upperRegs) > -1 || Find("DOG", upperRegs) > -1) {
+        return true;
+    }
+    return null;
+}
+
+var dogsAllowed = checkDogsAllowed(otherRegs);
+
+// === Build activity icons ===
+var allowedActivities = '';
+var notAllowedActivities = '';
+
+// Fishing icons
+var fishingYesIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/FishingYes.svg" alt="Fishing Allowed" title="Fishing Allowed" width="30" height="30" style="margin:0 6px;">';
+var fishingNoIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/NoFishing.svg" alt="Fishing Not Allowed" title="Fishing Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (fishing == "Yes" || fishing == "Catch and Release" || fishing == "Kids Only") {
+    allowedActivities += fishingYesIcon;
+} else if (fishing == "No") {
+    notAllowedActivities += fishingNoIcon;
+}
+
+// Boating icons - Kayaking
+var kayakYesIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/KayakingYes.svg" alt="Kayaking Allowed" title="Kayaking Allowed" width="30" height="30" style="margin:0 6px;">';
+var kayakNoIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/KayakingNo.svg" alt="Kayaking Not Allowed" title="Kayaking Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (boating == "Yes") {
+    allowedActivities += kayakYesIcon;
+} else if (boating == "No" || boating == "Belly Boating") {
+    notAllowedActivities += kayakNoIcon;
+}
+
+// Canoe
+var canoeYesIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/CanoeYes.svg" alt="Canoe Allowed" title="Canoe Allowed" width="30" height="30" style="margin:0 6px;">';
+var canoeNoIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/CanoeNo.svg" alt="Canoe Not Allowed" title="Canoe Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (boating == "Yes") {
+    allowedActivities += canoeYesIcon;
+} else if (boating == "No" || boating == "Belly Boating") {
+    notAllowedActivities += canoeNoIcon;
+}
+
+// Belly Boating
+var bellyBoatYesIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/BellyBoatingYes.svg" alt="Belly Boating Allowed" title="Belly Boating Allowed" width="30" height="30" style="margin:0 6px;">';
+var bellyBoatNoIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/BellyBoatingNo.svg" alt="Belly Boating Not Allowed" title="Belly Boating Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (boating == "Yes" || boating == "Belly Boating") {
+    allowedActivities += bellyBoatYesIcon;
+} else if (boating == "No") {
+    notAllowedActivities += bellyBoatNoIcon;
+}
+
+// Hand Launch (allowed if boating or belly boating allowed)
+var handLaunchYesIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/HandLaunchYes.svg" alt="Hand Launch Allowed" title="Hand Launch Allowed" width="30" height="30" style="margin:0 6px;">';
+var handLaunchNoIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/HandLaunchNo.svg" alt="Hand Launch Not Allowed" title="Hand Launch Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (boating == "Yes" || boating == "Belly Boating") {
+    allowedActivities += handLaunchYesIcon;
+} else if (boating == "No") {
+    notAllowedActivities += handLaunchNoIcon;
+}
+
+// Dogs (based on OtherRegs parsing)
+var dogYesIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DogYes.svg" alt="Dogs allowed with restrictions" title="Dogs allowed with restrictions" width="30" height="30" style="margin:0 6px;">';
+var dogNoIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DogNo.svg" alt="No dogs allowed" title="No dogs allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (dogsAllowed == true) {
+    allowedActivities += dogYesIcon;
+} else if (dogsAllowed == false) {
+    notAllowedActivities += dogNoIcon;
+}
+
+// Life Jacket (recommended when boating is allowed)
+var lifeJacketIcon = '<img src="https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/LifeJacket.svg" alt="Life jacket recommended" title="Life jacket recommended" width="30" height="30" style="margin:0 6px;">';
+
+if (boating == "Yes" || boating == "Belly Boating") {
+    allowedActivities += lifeJacketIcon;
+}
+
+// === Build regulation details section ===
+var regulationDetails = '';
+
+// Fishing regulation details
+if (!IsEmpty(fishingReg)) {
+    regulationDetails += '<p><span style="font-family:Arial;font-size:14px;"><strong>Fishing: </strong>' + fishingReg;
+    if (!IsEmpty(fishLink)) {
+        regulationDetails += ' <a href="' + fishLink + '" target="_blank" rel="nofollow">Read the full municipal code</a>';
+    }
+    regulationDetails += '</span></p>';
+}
+
+// Boating regulation details
+if (!IsEmpty(boatingReg)) {
+    regulationDetails += '<p><span style="font-family:Arial;font-size:14px;"><strong>Boating: </strong>' + boatingReg;
+    if (!IsEmpty(boatLink)) {
+        regulationDetails += ' <a href="' + boatLink + '" target="_blank" rel="nofollow">Read the full municipal code</a>';
+    }
+    regulationDetails += '</span></p>';
+}
+
+// Other regulations
+if (!IsEmpty(otherRegs)) {
+    regulationDetails += '<p><span style="font-family:Arial;font-size:14px;"><strong>Other Regulations: </strong>' + otherRegs;
+    if (!IsEmpty(otherRegsLink)) {
+        regulationDetails += ' <a href="' + otherRegsLink + '" target="_blank" rel="nofollow">Read the full municipal code</a>';
+    }
+    regulationDetails += '</span></p>';
+}
+
+// === Build HTML ===
+var html = ''
++ '<h3 style="background-color:#27443A;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">' + displayName + ' Water Regulations</span>'
++ '</h3>';
+
+// Only show allowed/not allowed sections if we have icons to display
+if (!IsEmpty(allowedActivities)) {
+    html += '<h3 style="background-color:#27443A;color:white;padding:5px;text-align:center;">'
+    + '<span style="font-family:Arial;font-size:18px;">Allowed Activities</span>'
+    + '</h3>'
+    + '<p style="text-align:center;">' + allowedActivities + '</p>';
+}
+
+if (!IsEmpty(notAllowedActivities)) {
+    html += '<h3 style="background-color:#741919;color:white;padding:5px;text-align:center;">'
+    + '<span style="font-family:Arial;font-size:18px;">Not Allowed</span>'
+    + '</h3>'
+    + '<p style="text-align:center;">' + notAllowedActivities + '</p>';
+}
+
+// Add regulation details
+if (!IsEmpty(regulationDetails)) {
+    html += '<h3 style="background-color:#27443A;color:white;padding:5px;text-align:center;">'
+    + '<span style="font-family:Arial;font-size:18px;">Regulation Details</span>'
+    + '</h3>'
+    + regulationDetails;
+}
+
+// Add location-specific links
+// Check for Coot Lake
+if (!IsEmpty(waterFeature) && (Find("Coot Lake", waterFeature) > -1 || Find("Coot", waterFeature) > -1)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Website: </strong>'
+    + '<a href="https://bouldercolorado.gov/locations/coot-lake" target="_blank" rel="nofollow">Learn more about Coot Lake</a>'
+    + '</span></p>';
+}
+// Check for Boulder Reservoir
+else if (!IsEmpty(waterFeature) && (Find("Boulder Reservoir", waterFeature) > -1 || Find("Boulder Res", waterFeature) > -1)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Website: </strong>'
+    + '<a href="https://bouldercolorado.gov/locations/boulder-reservoir" target="_blank" rel="nofollow">Learn more about Boulder Reservoir</a>'
+    + '</span></p>';
+}
+// Add OSMP fishing link if managed by Open Space and Mountain Parks
+else if (!IsEmpty(managedBy) && (managedBy == "Open Space and Mountain Park" || managedBy == "Open Space and Mountain Parks")) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Website: </strong>'
+    + '<a href="https://bouldercolorado.gov/services/fishing-osmp" target="_blank" rel="nofollow">Learn more about fishing on OSMP</a>'
+    + '</span></p>';
+}
+
+return html;
