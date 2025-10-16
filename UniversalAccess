@@ -1,0 +1,140 @@
+// === Universal Access Trail Popup - Consolidated Expression ===
+
+// Get feature attributes
+var bikes = $feature.Bikes;
+var dog = $feature.Dogs;
+var horse = $feature.Horses;
+var surfaceType = $feature.SurfaceType;
+var surfaceMaterial = $feature.SurfaceMaterial;
+var avgGrade = $feature.AvgGrade;
+var maxGrade = $feature.MaxABSGrade;
+var avgCrossSlope = $feature.AvgXSlope;
+var maxCrossSlope = $feature.MaxABSXSlope;
+var avgWidth = $feature.AvgWidthFt;
+var minWidth = $feature.MinWidthFt;
+var numStairs = $feature.Stairs;
+var trailName = $feature.TrailName;
+
+// === Build activity icons ===
+var allowedActivities = '';
+var notAllowedActivities = '';
+
+// Hiking icon (always allowed for universal access trails)
+var hikeIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/hike.svg" alt="Hiking Allowed" title="Hiking Allowed" width="30" height="30" style="margin:0 6px;">';
+allowedActivities += hikeIcon;
+
+// Biking icons
+var bikeYesIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/bike.svg" alt="Biking Allowed" title="Biking Allowed" width="30" height="30" style="margin:0 6px;">';
+var bikeNoIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/nobike.svg" alt="Biking Not Allowed" title="Biking Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (bikes == "Yes") {
+    allowedActivities += bikeYesIcon;
+} else {
+    notAllowedActivities += bikeNoIcon;
+}
+
+// Dog icons
+var dogYesIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/dog.svg" alt="Biking Allowed" title="Biking Allowed" width="30" height="30" style="margin:0 6px;">';
+var dogNoIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/nodog.svg" alt="Biking Not Allowed" title="Biking Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (dog == "Yes") {
+    allowedActivities += dogYesIcon;
+} else {
+    notAllowedActivities += dogNoIcon;
+}
+
+// Horse icons
+var horseYesIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/horse.svg" alt="Biking Allowed" title="Biking Allowed" width="30" height="30" style="margin:0 6px;">';
+var horseNoIcon = '<img src="https://maps.bouldercounty.org/icons/POS/trails/nohorse.svg" alt="Biking Not Allowed" title="Biking Not Allowed" width="30" height="30" style="margin:0 6px;">';
+
+if (horse == "Yes") {
+    allowedActivities += horseYesIcon;
+} else {
+    notAllowedActivities += horseNoIcon;
+}
+
+// === Build HTML ===
+var html = ''
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">' + trailName + ' - Universal Access Trail</span>'
++ '</h3>'
+
++ '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Allowed Uses</span>'
++ '</h3>'
++ '<p style="text-align:center;">' + allowedActivities + '</p>';
+
+// Only show "Not Allowed" section if there are restricted activities
+if (!IsEmpty(notAllowedActivities)) {
+    html += '<h3 style="background-color:#741919;border:1px solid #000;color:white;padding:5px;text-align:center;">'
+    + '<span style="font-family:Arial;font-size:18px;">Not Allowed</span>'
+    + '</h3>'
+    + '<p style="text-align:center;">' + notAllowedActivities + '</p>';
+}
+
+// Trail Grade Section
+html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Trail Grade</span>'
++ '</h3>'
++ '<p style="text-align:center;"><img src="https://boulder.maps.arcgis.com/sharing/rest/content/items/b4be01d0af2247ecb5b5d23b9021b277/data" alt="Trail Grade" width="30" height="30"></p>';
+
+if (!IsEmpty(avgGrade)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Average Grade:</strong> ' + Round(avgGrade, 1) + '%</span></p>';
+}
+if (!IsEmpty(maxGrade)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Max Grade:</strong> ' + Round(maxGrade, 1) + '%</span></p>';
+}
+
+// Trail Cross-slope Section
+html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Trail Cross-slope</span>'
++ '</h3>'
++ '<p style="text-align:center;"><img src="https://boulder.maps.arcgis.com/sharing/rest/content/items/5fa1c65b0137462296de674669c4d5d3/data" alt="Trail Cross Slope" width="30" height="30"></p>';
+
+if (!IsEmpty(avgCrossSlope)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Average Cross-slope:</strong> ' + Round(avgCrossSlope, 1) + '%</span></p>';
+}
+if (!IsEmpty(maxCrossSlope)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Max Cross-slope:</strong> ' + Round(maxCrossSlope, 1) + '%</span></p>';
+}
+
+// Trail Width Section
+html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Trail Width</span>'
++ '</h3>'
++ '<p style="text-align:center;"><img src="https://boulder.maps.arcgis.com/sharing/rest/content/items/92dee8817c9f4bce91f415690443f2af/data" alt="Trail Width" width="30" height="30"></p>';
+
+if (!IsEmpty(avgWidth)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Average Width:</strong> ' + Round(avgWidth, 1) + ' ft</span></p>';
+}
+if (!IsEmpty(minWidth)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Minimum Width:</strong> ' + Round(minWidth, 1) + ' ft</span></p>';
+}
+
+// Trail Surface Section
+html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Trail Surface</span>'
++ '</h3>'
++ '<p style="text-align:center;"><img src="https://boulder.maps.arcgis.com/sharing/rest/content/items/b9819de6aeb046f1b23d64d8a8b377af/data" alt="Trail Surface" width="30" height="30"></p>';
+
+if (!IsEmpty(surfaceType)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Surface Type:</strong> ' + surfaceType + '</span></p>';
+}
+if (!IsEmpty(surfaceMaterial)) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Surface Material:</strong> ' + surfaceMaterial + '</span></p>';
+}
+
+// Trail Features Section
+html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">'
++ '<span style="font-family:Arial;font-size:18px;">Trail Features</span>'
++ '</h3>';
+
+if (!IsEmpty(numStairs) && numStairs > 0) {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Number of Stairs:</strong> ' + numStairs + '</span></p>';
+} else {
+    html += '<p><span style="font-family:Arial;font-size:14px;"><strong>Number of Stairs:</strong> None</span></p>';
+}
+return { 
+	type : 'text', 
+	text : html//this property supports html tags 
+}
