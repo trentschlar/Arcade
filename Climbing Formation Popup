@@ -16,7 +16,7 @@ var displayFlag  = IIf(IsEmpty($feature.Display), "Yes", Text($feature.Display))
 var fixedHardware= IIf(IsEmpty($feature.FixedHardwarePermit), "No", Text($feature.FixedHardwarePermit));
 
 // --- Status color ---
-var statusColor = IIf(Upper(closureActive) == "Y", "#aa2525", "#27443A");
+var statusColor = IIf(Upper(closureActive) == "Y", "#772618", "#27443A");
 
 // --- Icon URLs ---
 var urlClimbYes     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/ClimbingYes.svg";
@@ -75,11 +75,20 @@ if (Upper(seasonal) == "YES" || Upper(closureActive) == "Y") {
 // --- Build HTML ---
 var html = '';
 html += '<h3 style="background-color:' + statusColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;">' + featureName + '</h3>';
+
+// --- Closure info ---
+html += closureBlock;
+
+// --- Only show general closure link if no seasonal/active closure ---
+if (!hasClosure) {
+    html += '<p>For closures and management info see <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow">OSMP\'s Closure Webpage</a></p>';
+}
+
+
 html += '<p><strong>Owner:</strong> ' + IIf(IsEmpty(owner), 'Unknown', owner) + '</p>';
 html += '<p><strong>Access Notes:</strong> ' + IIf(IsEmpty(areaAccess), 'N/A', areaAccess) + '</p>';
 
 html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Allowed Activities</h3>';
-html += '<p><strong>Type:</strong> ' + formationType + '</p>';
 
 // --- Activity icons ---
 var activityIcons = "";
@@ -93,6 +102,9 @@ if (isWall) {
 }
 
 html += '<p style="text-align:center;">' + activityIcons + '</p>';
+html += '<p><strong>Type:</strong> ' + formationType + '</p>';
+
+
 
 // --- Passes & Permits ---
 html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Passes & Permits</h3>';
@@ -111,17 +123,11 @@ if (!permitsNeeded) {
 
 // --- Hazards & Difficulty ---
 html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Hazards & Difficulty</h3>';
+html += '<p style="text-align:center;">' + diffIcon + '</p>';
 html += '<p><strong>Routes:</strong> ' + IIf(IsEmpty(routes), 'Unknown', routes) + '</p>';
 html += '<p><strong>Use Rating:</strong> ' + IIf(IsEmpty(useRating), 'N/A', useRating) + '</p>';
-html += '<p style="text-align:center;">' + diffIcon + '</p>';
 
-// --- Closure info ---
-html += closureBlock;
 
-// --- Only show general closure link if no seasonal/active closure ---
-if (!hasClosure) {
-    html += '<p>For closures and management info see <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow">OSMP\'s Closure Webpage</a></p>';
-}
 
 return { 
     type : 'text', 
