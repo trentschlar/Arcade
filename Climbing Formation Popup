@@ -77,6 +77,26 @@ if (Upper(seasonal) == "YES" || Upper(closureActive) == "Y") {
 var html = '';
 html += '<h3 style="background-color:' + statusColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;">' + featureName + '</h3>';
 
+// --- Owner block ---
+var owner = Text($feature.OWNER);
+var ownerHtml = "";
+var osmpIconHtml = "";
+
+if (IsEmpty(owner)) {
+    ownerHtml = '<div style="text-align:left;"><b>Owner:</b> Unknown</div>';
+} else if (Upper(owner) == "OSMP") {
+    // Icon centered, text below left aligned with bold label
+    osmpIconHtml = '<div style="text-align:center;">' + makeIcon(urlOSMPLogo, "OSMP") + '</div>';
+    ownerHtml = '<p style="text-align:left;"><b>Owner:</b> ' + owner + '</p>';
+} else {
+    // Non-OSMP owner, no icon
+    ownerHtml = '<p style="text-align:left;"><b>Owner:</b> ' + owner + '</p>';
+}
+
+// Append to HTML
+html += osmpIconHtml + ownerHtml;
+html += '<p><strong>Access Notes:</strong> ' + IIf(IsEmpty(areaAccess), 'N/A', areaAccess) + '</p>';
+
 // --- Closure info ---
 html += closureBlock;
 
@@ -84,16 +104,6 @@ html += closureBlock;
 if (!hasClosure) {
     html += '<p>For closures and management info see <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow">OSMP\'s Closure Webpage</a></p>';
 }
-
-// --- Owner display with OSMP logo before the label if OSMP ---
-var ownerHtml = IIf(IsEmpty(owner), 'Unknown', owner);
-if (Upper(owner) == "OSMP") {
-    ownerHtml = makeIcon(urlOSMPLogo, "OSMP") + ' Owner: ' + ownerHtml;
-} else {
-    ownerHtml = 'Owner: ' + ownerHtml;
-}
-html += '<p style="text-align:center;">' + ownerHtml + '</p>';
-html += '<p><strong>Access Notes:</strong> ' + IIf(IsEmpty(areaAccess), 'N/A', areaAccess) + '</p>';
 
 // --- Allowed / Not Allowed Activities header ---
 var activityHeaderColor = statusColor; // use the same status color
