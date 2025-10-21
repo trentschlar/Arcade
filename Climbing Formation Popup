@@ -10,7 +10,7 @@ var owner        = IIf(IsEmpty($feature.OWNER), "", Text($feature.OWNER));
 var seasonal     = IIf(IsEmpty($feature.SeasonalClosure), "NO", Upper(Text($feature.SeasonalClosure)));
 var areaAccess   = IIf(IsEmpty($feature.AreaAccess), "", Text($feature.AreaAccess));
 var useRatingNum = IIf(IsEmpty($feature.UseRating), Null, $feature.UseRating);
-var useRating    = IIf(IsEmpty($feature.UseRating), "", Text($feature.UseRating));
+var useRating    = IIf(IsEmpty(useRatingNum), "", Text(Round(useRatingNum, 2)));
 var closureActive= IIf(IsEmpty($feature.ClosureActive), "N", Text($feature.ClosureActive));
 var displayFlag  = IIf(IsEmpty($feature.Display), "Yes", Text($feature.Display));
 var fixedHardware= IIf(IsEmpty($feature.FixedHardwarePermit), "No", Text($feature.FixedHardwarePermit));
@@ -30,6 +30,7 @@ var urlDiffMed      = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/h
 var urlDiffHard     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DifficultyHard.svg";
 var urlDiffVeryHard = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DifficultyVeryHard.svg";
 var urlCalendar     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/Calendar.svg";
+var urlOSMPLogo     = "https://boulder.maps.arcgis.com/sharing/rest/content/items/5739adf1962d4b44a0be659b2790fe74/data";
 
 // --- Logic for allowed activities ---
 var climbingAllowed = IIf(Find("NO CLIMB", Upper(areaAccess)) > -1 || Upper(displayFlag) == "NO" || Upper(closureActive) == "Y", false, true);
@@ -84,11 +85,20 @@ if (!hasClosure) {
     html += '<p>For closures and management info see <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow">OSMP\'s Closure Webpage</a></p>';
 }
 
-
-html += '<p><strong>Owner:</strong> ' + IIf(IsEmpty(owner), 'Unknown', owner) + '</p>';
+// --- Owner display with OSMP logo before the label if OSMP ---
+var ownerHtml = IIf(IsEmpty(owner), 'Unknown', owner);
+if (Upper(owner) == "OSMP") {
+    ownerHtml = makeIcon(urlOSMPLogo, "OSMP") + ' Owner: ' + ownerHtml;
+} else {
+    ownerHtml = 'Owner: ' + ownerHtml;
+}
+html += '<p style="text-align:center;">' + ownerHtml + '</p>';
 html += '<p><strong>Access Notes:</strong> ' + IIf(IsEmpty(areaAccess), 'N/A', areaAccess) + '</p>';
 
-html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Allowed Activities</h3>';
+// --- Allowed / Not Allowed Activities header ---
+var activityHeaderColor = statusColor; // use the same status color
+var activityHeaderText  = IIf(Upper(closureActive) == "Y", "Not Allowed Activities", "Allowed Activities");
+html += '<h3 style="background-color:' + activityHeaderColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;">' + activityHeaderText + '</h3>';
 
 // --- Activity icons ---
 var activityIcons = "";
@@ -103,8 +113,6 @@ if (isWall) {
 
 html += '<p style="text-align:center;">' + activityIcons + '</p>';
 html += '<p><strong>Type:</strong> ' + formationType + '</p>';
-
-
 
 // --- Passes & Permits ---
 html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Passes & Permits</h3>';
@@ -123,13 +131,12 @@ if (!permitsNeeded) {
 
 // --- Hazards & Difficulty ---
 html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Hazards & Difficulty</h3>';
-html += '<p style="text-align:center;">' + diffIcon + '</p>';
+html += '<p style="text-align:center;">' + diffIcon + '</p>'; // corrected variable
 html += '<p><strong>Routes:</strong> ' + IIf(IsEmpty(routes), 'Unknown', routes) + '</p>';
 html += '<p><strong>Use Rating:</strong> ' + IIf(IsEmpty(useRating), 'N/A', useRating) + '</p>';
 
-
-
+// --- Return final HTML ---
 return { 
     type : 'text', 
-    text : html //this property supports html tags 
-}
+    text : html // this property supports HTML tags
+};
