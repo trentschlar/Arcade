@@ -1,4 +1,4 @@
-// === Climbing Formation Popup - ESRI Arcade Compatible Version ===
+// === Climbing Formation Popup - Compact Two Column Layout ===
 
 // --- Fields ---
 var featureName  = IIf(IsEmpty($feature.FEATURE), "Unnamed Formation", Text($feature.FEATURE));
@@ -23,14 +23,16 @@ var urlClimbYes     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/h
 var urlClimbNo      = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/ClimbingNo.svg";
 var urlRockYes      = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/RockClimbingYes.svg";
 var urlRockNo       = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/RockClimbingNo.svg";
-var urlPass         = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/Pass.svg";
 var urlHcaPass      = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/HCA3.svg";
-var urlDiffEasy     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DifficultyEasy.svg";
-var urlDiffMed      = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DifficultyMedium.svg";
-var urlDiffHard     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DifficultyHard.svg";
-var urlDiffVeryHard = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/DifficultyVeryHard.svg";
 var urlCalendar     = "https://raw.githubusercontent.com/trentschlar/SVGs/refs/heads/main/Calendar.svg";
 var urlOSMPLogo     = "https://boulder.maps.arcgis.com/sharing/rest/content/items/5739adf1962d4b44a0be659b2790fe74/data";
+
+// --- Common styles ---
+var headerStyle = 'background-color:' + statusColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;font-family:Arial;font-size:16px;margin:0;';
+var textStyle = 'font-family:Arial;font-size:13px;margin:3px 0;';
+var rowStyle = 'display:flex;align-items:flex-start;padding:10px;';
+var iconColStyle = 'flex:0 0 60px;text-align:center;padding-right:10px;';
+var textColStyle = 'flex:1;';
 
 // --- Logic for allowed activities ---
 var climbingAllowed = IIf(Find("NO CLIMB", Upper(areaAccess)) > -1 || Upper(displayFlag) == "NO" || Upper(closureActive) == "Y", false, true);
@@ -38,115 +40,100 @@ var ftUpper = Upper(formationType);
 var isBoulder = IIf(Find("BOULDER", ftUpper) > -1, true, false);
 var isWall = IIf(Find("WALL", ftUpper) > -1, true, false);
 
-// --- Unified icon size ---
-var iconSize = 30;
-
+// --- Icon helper function ---
+var iconSize = 40;
 function makeIcon(u, alt){
-    return '<img src="' + u + '" alt="' + alt + '" title="' + alt + '" width="' + iconSize + '" height="' + iconSize + '" style="margin:0 6px;object-fit:contain;">';
-}
-
-// --- Difficulty icons ---
-var diffIcon = "";
-if (!IsEmpty(useRatingNum)) {
-    if (useRatingNum <= 2) {
-        diffIcon = makeIcon(urlDiffEasy, "Difficulty: Easy");
-    } else if (useRatingNum <= 3.5) {
-        diffIcon = makeIcon(urlDiffMed, "Difficulty: Medium");
-    } else if (useRatingNum <= 4.5) {
-        diffIcon = makeIcon(urlDiffHard, "Difficulty: Hard");
-    } else {
-        diffIcon = makeIcon(urlDiffVeryHard, "Difficulty: Very Hard");
-    }
-}
-
-// --- Seasonal / Active closure ---
-var closureBlock = "";
-var hasClosure = false;
-if (Upper(seasonal) == "YES" || Upper(closureActive) == "Y") {
-    hasClosure = true;
-    closureBlock = '<p>' + makeIcon(urlCalendar, "Seasonal Closure") + '&nbsp;&nbsp;' +
-        '<span style="font-family:Arial;font-size:14px;color:#aa2525;"><strong>Seasonal / Active Closure</strong>' +
-        IIf(Upper(seasonal) == "YES", ': Seasonal closure in effect.', '') +
-        IIf(Upper(closureActive) == "Y", ' This formation is currently closed.', '') +
-        ' See <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow" style="color:#aa2525;text-decoration:underline;">OSMP\'s Closure Webpage</a>.' +
-        '</span>' +
-        '</p>';
+    return '<img src="' + u + '" alt="' + alt + '" title="' + alt + '" width="' + iconSize + '" height="' + iconSize + '" style="object-fit:contain;">';
 }
 
 // --- Build HTML ---
-var html = '';
-html += '<h3 style="background-color:' + statusColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;">' + featureName + '</h3>';
+var html = '<div style="font-family:Arial;">';
+html += '<h3 style="' + headerStyle + '">' + featureName + '</h3>';
 
-// --- Owner block ---
-var owner = Text($feature.OWNER);
-var ownerHtml = "";
-var osmpIconHtml = "";
-
-if (IsEmpty(owner)) {
-    ownerHtml = '<div style="text-align:left;"><b>Owner:</b> Unknown</div>';
-} else if (Upper(owner) == "OSMP") {
-    // Icon centered, text below left aligned with bold label
-    osmpIconHtml = '<div style="text-align:center;">' + makeIcon(urlOSMPLogo, "OSMP") + '</div>';
-    ownerHtml = '<p style="text-align:left;"><b>Owner:</b> ' + owner + '</p>';
-} else {
-    // Non-OSMP owner, no icon
-    ownerHtml = '<p style="text-align:left;"><b>Owner:</b> ' + owner + '</p>';
+// --- Owner Section ---
+if (!IsEmpty(owner) && Upper(owner) == "OSMP") {
+    html += '<div style="' + rowStyle + '">';
+    html += '<div style="' + iconColStyle + '">' + makeIcon(urlOSMPLogo, "OSMP") + '</div>';
+    html += '<div style="' + textColStyle + '">';
+    html += '<div style="' + textStyle + '"><strong>Owner:</strong> ' + owner + '</div>';
+    if (!IsEmpty(areaAccess)) {
+        html += '<div style="' + textStyle + '"><strong>Access Notes:</strong> ' + areaAccess + '</div>';
+    }
+    html += '</div></div>';
+} else if (!IsEmpty(owner)) {
+    html += '<div style="padding:10px;' + textStyle + '"><strong>Owner:</strong> ' + owner + '</div>';
+    if (!IsEmpty(areaAccess)) {
+        html += '<div style="padding:0 10px;' + textStyle + '"><strong>Access Notes:</strong> ' + areaAccess + '</div>';
+    }
+} else if (!IsEmpty(areaAccess)) {
+    html += '<div style="padding:10px;' + textStyle + '"><strong>Access Notes:</strong> ' + areaAccess + '</div>';
 }
 
-// Append to HTML
-html += osmpIconHtml + ownerHtml;
-html += '<p><strong>Access Notes:</strong> ' + IIf(IsEmpty(areaAccess), 'N/A', areaAccess) + '</p>';
-
-// --- Closure info ---
-html += closureBlock;
+// --- Seasonal / Active closure ---
+var hasClosure = false;
+if (Upper(seasonal) == "YES" || Upper(closureActive) == "Y") {
+    hasClosure = true;
+    html += '<div style="background-color:#ffe6e6;border:1px solid #aa2525;padding:10px;margin:5px 0;">';
+    html += '<div style="' + rowStyle + 'padding:0;">';
+    html += '<div style="' + iconColStyle + '">' + makeIcon(urlCalendar, "Seasonal Closure") + '</div>';
+    html += '<div style="' + textColStyle + '">';
+    html += '<div style="' + textStyle + 'color:#aa2525;"><strong>Seasonal / Active Closure</strong></div>';
+    if (Upper(seasonal) == "YES") {
+        html += '<div style="' + textStyle + 'color:#aa2525;">Seasonal closure in effect.</div>';
+    }
+    if (Upper(closureActive) == "Y") {
+        html += '<div style="' + textStyle + 'color:#aa2525;">This formation is currently closed.</div>';
+    }
+    html += '<div style="' + textStyle + '"><a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow" style="color:#aa2525;text-decoration:underline;">OSMP Closure Webpage</a></div>';
+    html += '</div></div></div>';
+}
 
 // --- Only show general closure link if no seasonal/active closure ---
 if (!hasClosure) {
-    html += '<p>For closures and management info see <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow">OSMP\'s Closure Webpage</a></p>';
+    html += '<div style="padding:5px 10px;' + textStyle + '">For closures: <a href="https://bouldercolorado.gov/services/osmp-closures" target="_blank" rel="nofollow">OSMP Closure Webpage</a></div>';
 }
 
-// --- Allowed / Not Allowed Activities header ---
-var activityHeaderColor = statusColor; // use the same status color
-var activityHeaderText  = IIf(Upper(closureActive) == "Y", "Not Allowed Activities", "Allowed Activities");
-html += '<h3 style="background-color:' + activityHeaderColor + ';border:1px solid #000;color:white;padding:5px;text-align:center;">' + activityHeaderText + '</h3>';
+// --- Allowed / Not Allowed Activities ---
+var activityHeaderText = IIf(Upper(closureActive) == "Y", "Not Allowed Activities", "Allowed Activities");
+html += '<h4 style="' + headerStyle + '">' + activityHeaderText + '</h4>';
 
-// --- Activity icons ---
-var activityIcons = "";
+// Determine which icon to show
+var activityIcon = "";
 if (isWall) {
-    activityIcons = IIf(climbingAllowed, makeIcon(urlRockYes, 'Rock Climbing Allowed'), makeIcon(urlRockNo, 'Rock Climbing Not Allowed'));
+    activityIcon = IIf(climbingAllowed, makeIcon(urlRockYes, 'Rock Climbing Allowed'), makeIcon(urlRockNo, 'Rock Climbing Not Allowed'));
 } else if (isBoulder) {
-    activityIcons = IIf(climbingAllowed, makeIcon(urlClimbYes, 'Climbing Allowed'), makeIcon(urlClimbNo, 'Climbing Not Allowed'));
+    activityIcon = IIf(climbingAllowed, makeIcon(urlClimbYes, 'Climbing Allowed'), makeIcon(urlClimbNo, 'Climbing Not Allowed'));
 } else {
-    activityIcons = IIf(climbingAllowed, makeIcon(urlClimbYes, 'Climbing Allowed'), makeIcon(urlClimbNo, 'Climbing Not Allowed')) +
-                    IIf(climbingAllowed, makeIcon(urlRockYes, 'Rock Climbing Allowed'), makeIcon(urlRockNo, 'Rock Climbing Not Allowed'));
+    // Default to climbing icon
+    activityIcon = IIf(climbingAllowed, makeIcon(urlClimbYes, 'Climbing Allowed'), makeIcon(urlClimbNo, 'Climbing Not Allowed'));
 }
 
-html += '<p style="text-align:center;">' + activityIcons + '</p>';
-html += '<p><strong>Type:</strong> ' + formationType + '</p>';
+html += '<div style="' + rowStyle + '">';
+html += '<div style="' + iconColStyle + '">' + activityIcon + '</div>';
+html += '<div style="' + textColStyle + '">';
+html += '<div style="' + textStyle + '"><strong>Type:</strong> ' + formationType + '</div>';
+html += '<div style="' + textStyle + '"><strong>Routes:</strong> ' + IIf(IsEmpty(routes), 'Unknown', routes) + '</div>';
+html += '<div style="' + textStyle + '"><strong>Use Rating:</strong> ' + IIf(IsEmpty(useRating), 'N/A', useRating) + '</div>';
+html += '</div></div>';
 
 // --- Passes & Permits ---
-html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Passes & Permits</h3>';
-var permitsNeeded = false;
+html += '<h4 style="' + headerStyle + '">Passes & Permits</h4>';
+
 if (Upper(hca) == 'YES') {
-    html += '<p>' + makeIcon(urlHcaPass, 'HCA Pass Required') + ' HCA pass required for this location. <a href="https://bouldercolorado.gov/services/off-trail-permits" target="_blank" rel="nofollow" style="text-decoration:underline;">Apply for an Off-Trail Permit</a></p>';
-    permitsNeeded = true;
-}
-if (Upper(fixedHardware) == 'YES') {
-    html += '<p>' + makeIcon(urlPass, 'Fixed Hardware Permit Required') + ' Fixed hardware permit is required. <a href="http://flatironsclimbing.org/fixed-hardware-application-process/" target="_blank" rel="nofollow" style="text-decoration:underline;">Apply for Fixed Hardware Permit</a></p>';
-    permitsNeeded = true;
-}
-if (!permitsNeeded) {
-    html += '<p style="text-align:center;color:#666;">No permits or passes required</p>';
+    html += '<div style="' + rowStyle + '">';
+    html += '<div style="' + iconColStyle + '">' + makeIcon(urlHcaPass, 'HCA Pass Required') + '</div>';
+    html += '<div style="' + textColStyle + '">';
+    html += '<div style="' + textStyle + '"><strong>HCA Pass Required</strong></div>';
+    html += '<div style="' + textStyle + '"><a href="https://bouldercolorado.gov/services/off-trail-permits" target="_blank" rel="nofollow" style="text-decoration:underline;">Apply for Off-Trail Permit</a></div>';
+    html += '</div></div>';
+} else {
+    html += '<div style="text-align:center;padding:10px;color:#666;' + textStyle + '">No permits or passes required</div>';
 }
 
-// --- Hazards & Difficulty ---
-html += '<h3 style="background-color:#27443A;border:1px solid #000;color:white;padding:5px;text-align:center;">Hazards & Difficulty</h3>';
-html += '<p style="text-align:center;">' + diffIcon + '</p>'; // corrected variable
-html += '<p><strong>Routes:</strong> ' + IIf(IsEmpty(routes), 'Unknown', routes) + '</p>';
-html += '<p><strong>Use Rating:</strong> ' + IIf(IsEmpty(useRating), 'N/A', useRating) + '</p>';
+html += '</div>';
 
 // --- Return final HTML ---
 return { 
-    type : 'text', 
-    text : html // this property supports HTML tags
-};
+    type: 'text', 
+    text: html
+}
